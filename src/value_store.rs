@@ -23,7 +23,8 @@ impl ValueStore {
     }
 
     pub fn get_value_for_key(&mut self, key: &KeyEntry) -> ValueEntry{
-        self.store.seek(SeekFrom::Start(key.data_offset));
+        self.store.seek(SeekFrom::Start(key.data_offset))
+            .expect("Unable to seek to data offset in value store");
 
         let data_size = self.store.read_u32::<BigEndian>().unwrap();
 
@@ -34,7 +35,8 @@ impl ValueStore {
 
         let value = ValueEntry::with_data(data_size, boxed_buf.to_vec());
 
-        self.store.seek(SeekFrom::End(0));
+        self.store.seek(SeekFrom::End(0))
+            .expect("Unable to seek to end of value store");
 
         return value;
     }
@@ -65,7 +67,7 @@ impl ValueStore {
                         boxed_buf.to_vec()
                     ))
                 },
-                Err(e) => break
+                Err(_e) => break
             }
         }
 

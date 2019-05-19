@@ -5,13 +5,6 @@ pub struct ValueEntry {
 }
 
 impl ValueEntry {
-    pub fn new(data_size: u32) -> Self {
-        return ValueEntry {
-            data_size,
-            data: Vec::<u8>::with_capacity(data_size as usize)
-        }
-    }
-
     pub fn with_data(data_size: u32, data: Vec<u8>) -> Self {
         return ValueEntry {
             data_size,

@@ -45,7 +45,8 @@ impl KeyStore {
                     let key_buf = vec![0u8; val as usize];
                     let mut boxed_buf = key_buf.into_boxed_slice();
 
-                    let key = file.read_exact(&mut boxed_buf[..]).unwrap();
+                    // Read key
+                    file.read_exact(&mut boxed_buf[..]).unwrap();
                     let offset = file.read_u64::<BigEndian>().unwrap();
 
                     keys.push(KeyEntry::new(
@@ -53,7 +54,7 @@ impl KeyStore {
                         offset
                     ))
                 },
-                Err(e) => break
+                Err(_e) => break
             }
         }
 

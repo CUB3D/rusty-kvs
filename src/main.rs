@@ -1,4 +1,5 @@
 #![feature(seek_convenience)]
+#[warn(dead_code)]
 
 mod key_entry;
 mod value_entry;
@@ -12,9 +13,9 @@ fn main() {
 
     let mut kvs = key_value_store::KeyValueStore::default();
 
-//    for x in 0 .. 100000 {
+    for x in 0 .. 100000 {
         kvs.store_data("https://google.com".to_string(), data);
-//    }
+    }
 
     let data = kvs.get_data("https://google.com".to_string());
     let str = data.into_boxed_slice();

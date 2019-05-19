@@ -1,8 +1,6 @@
 use crate::key_entry::KeyEntry;
 use crate::key_store::KeyStore;
 use std::path::Path;
-use std::fs::{OpenOptions, File};
-use std::io::{SeekFrom};
 use std::fs;
 use crate::value_entry::ValueEntry;
 use crate::value_store::ValueStore;
@@ -36,16 +34,6 @@ impl KeyValueStore {
 
         let data = self.value_store.get_value_for_key(res);
 
-//        println!("Reading from offset: {}, {}", &res.data_offset, &res.data_size);
-//
-//        self.data_store.seek(SeekFrom::Start(res.data_offset)).unwrap();
-//
-//        let mut data = vec![0u8; res.data_size as usize];
-//
-//        self.data_store.read_exact(&mut data).unwrap();
-//
-//        self.value_store.seek(SeekFrom::End(0));
-
         data.data
     }
 }
@@ -54,16 +42,8 @@ impl Default for KeyValueStore {
     fn default() -> Self {
         let path = Path::new("./data_store");
 
-        let mut data = OpenOptions::new()
-            .append(true)
-            .write(true)
-            .read(true)
-            .open(path)
-            .unwrap();
-
         return KeyValueStore {
             key_store: KeyStore::default(),
-//            data_store: data,
             value_store: ValueStore::default(),
             last_size: fs::metadata(path).unwrap().len()
         };

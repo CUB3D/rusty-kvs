@@ -1,8 +1,9 @@
 [package]
-name = "onefilekvs"
+name = "rusty-kvs"
 version = "0.1.0"
 authors = ["CUB3D <callumthom11@gmail.com>"]
 edition = "2018"
+description = "A simple and fast key value store"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

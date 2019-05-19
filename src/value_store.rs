@@ -20,9 +20,11 @@ impl ValueStore {
         if let Err(e) = self.store.write(&value.data.clone().into_boxed_slice()) {
             eprintln!("Unable to write data size to store: {:?}", e);
         }
+
+        self.store.flush().expect("Unable to flush value store")
     }
 
-    pub fn get_value_for_key(&mut self, key: &KeyEntry) -> ValueEntry{
+    pub fn get_value_for_key(&mut self, key: &KeyEntry) -> Option<ValueEntry> {
         self.store.seek(SeekFrom::Start(key.data_offset))
             .expect("Unable to seek to data offset in value store");
 
@@ -31,14 +33,17 @@ impl ValueStore {
         let data_buf = vec![0u8; data_size as usize];
         let mut boxed_buf = data_buf.into_boxed_slice();
 
-        self.store.read_exact(&mut boxed_buf[..]).unwrap();
+        if let Err(e) = self.store.read_exact(&mut boxed_buf[..]) {
+            eprintln!("Unable to read key data from store: {:?}", e);
+            return Option::None;
+        }
 
         let value = ValueEntry::with_data(data_size, boxed_buf.to_vec());
 
         self.store.seek(SeekFrom::End(0))
             .expect("Unable to seek to end of value store");
 
-        return value;
+        return Option::Some(value);
     }
 
     // Consider caching this in the store file, should be able to put in in a header

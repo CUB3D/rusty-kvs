@@ -12,7 +12,7 @@ pub struct KeyStore {
 
 impl KeyStore {
     pub fn append_key(&mut self, key: &KeyEntry) {
-        if let Err(e) = self.store.write_u32::<BigEndian>(key.key.len() as u32) {
+        if let Err(e) = self.store.write_u16::<BigEndian>(key.key.len() as u16) {
             eprintln!("Unable to write key length to store: {:?}", e);
         }
 
@@ -23,6 +23,8 @@ impl KeyStore {
         if let Err(e) = self.store.write_u64::<BigEndian>(key.data_offset) {
             eprintln!("Unable to write offset to store: {:?}", e);
         }
+
+        self.store.flush().expect("Unable to flush key store")
     }
 
     // Consider caching this in the store file, should be able to put in in a header
@@ -40,7 +42,7 @@ impl KeyStore {
         let mut keys = Vec::<KeyEntry>::new();
 
         loop {
-            match file.read_u32::<BigEndian>() {
+            match file.read_u16::<BigEndian>() {
                 Ok(val) => {
                     let key_buf = vec![0u8; val as usize];
                     let mut boxed_buf = key_buf.into_boxed_slice();

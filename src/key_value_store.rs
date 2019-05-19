@@ -4,11 +4,11 @@ use std::path::Path;
 use std::fs;
 use crate::value_entry::ValueEntry;
 use crate::value_store::ValueStore;
+use std::mem::size_of;
 
 pub struct KeyValueStore {
     pub key_store: KeyStore,
     pub value_store: ValueStore,
-//    pub data_store: File,
     last_size: u64
 }
 
@@ -22,10 +22,10 @@ impl KeyValueStore {
         self.key_store.append_key(&new_key);
         self.value_store.append_value(&new_data);
 
-        self.last_size += value.len() as u64;
+        self.last_size += (value.len() + size_of::<u32>()) as u64;
     }
 
-    pub fn get_data(&mut self, key: String) -> Vec<u8> {
+    pub fn get_data(&mut self, key: String) -> Option<Vec<u8>> {
         let keys = self.key_store.get_keys();
 
         let res = keys.iter().find(|c|
@@ -34,7 +34,10 @@ impl KeyValueStore {
 
         let data = self.value_store.get_value_for_key(res);
 
-        data.data
+        match data {
+            Some(t) => Some(t.data),
+            None => None
+        }
     }
 }
 

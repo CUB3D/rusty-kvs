@@ -1,8 +1,10 @@
 #![feature(seek_convenience)]
 
 mod key_entry;
+mod value_entry;
 mod key_value_store;
 mod key_store;
+mod value_store;
 
 fn main() {
     let data = "<html><p>Test123</p></html><html><p>Test123</p></html><html><p>Test123</p></html><html><p>Test123</p".as_bytes();

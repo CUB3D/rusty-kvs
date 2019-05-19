@@ -3,8 +3,6 @@ use crate::key_entry::KeyEntry;
 use std::fs::{File, OpenOptions};
 use std::io::{Write, Read};
 use byteorder::{BigEndian, WriteBytesExt, ReadBytesExt};
-use std::mem;
-use std::intrinsics::write_bytes;
 use std::vec::Vec;
 
 pub struct KeyStore {
@@ -24,10 +22,6 @@ impl KeyStore {
 
         if let Err(e) = self.store.write_u64::<BigEndian>(key.data_offset) {
             eprintln!("Unable to write offset to store: {:?}", e);
-        }
-
-        if let Err(e) = self.store.write_u32::<BigEndian>(key.data_size) {
-            eprintln!("Unable to write data size to store: {:?}", e);
         }
     }
 
@@ -53,12 +47,10 @@ impl KeyStore {
 
                     let key = file.read_exact(&mut boxed_buf[..]).unwrap();
                     let offset = file.read_u64::<BigEndian>().unwrap();
-                    let size = file.read_u32::<BigEndian>().unwrap();
 
-                    keys.push(KeyEntry::with_size(
+                    keys.push(KeyEntry::new(
                         std::str::from_utf8(&boxed_buf).unwrap().to_string(),
-                        offset,
-                        size
+                        offset
                     ))
                 },
                 Err(e) => break
@@ -80,7 +72,7 @@ impl Default for KeyStore {
 
         return KeyStore {
             store_path: path,
-            store: store
+            store
         };
     }
 }
